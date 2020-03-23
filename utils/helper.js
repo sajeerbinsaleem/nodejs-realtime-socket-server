@@ -12,6 +12,11 @@ class Helper{
 
 	async addSocketId(userId, userSocketId){
 		try {
+			const user = await this.db.query(`SELECT socket_id, id from users WHERE id = ?`, [userId]);
+			console.log('user', user);
+			if (user.length > 0 && user[0].socket_id !='') {
+				return true;
+			}
 			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
 		} catch (error) {
 			console.log(error);
@@ -25,7 +30,6 @@ class Helper{
 
 	getChatList(userId, tenantId, slug){
 		try {
-			console.log(`SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ${userId} AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ${tenantId}`);
 			return Promise.all([
 				this.db.query(`SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ?`, [userId, tenantId])
 			]).then( (response) => {
