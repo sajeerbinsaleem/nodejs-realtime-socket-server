@@ -74,6 +74,8 @@ class Socket{
                 });
                 const s3 = new AWS.S3();
                 const imageRemoteName = response.fileName;
+                const toUser = await helper.getSocketId(response.toUserId);
+                console.log('sending message to user', toUser[0].socket_id); 
                 console.log('upload image emited', response);
                 s3.upload({
                     Bucket: BUCKET,
@@ -87,8 +89,6 @@ class Socket{
                     response.date = new moment().format("Y-MM-D");
                     response.time = new moment().format("hh:mm A");
                     this.insertMessage(response, socket);
-                    const toUser = await helper.getSocketId(response.toUserId);
-                    console.log('sending message to user', toUser[0].socket_id); 
                     socket.to(toUser[0].socket_id).emit('addMessageResponse', response);
                     socket.emit('image-uploaded', response);
                 }).catch(err => {
