@@ -34,7 +34,8 @@ class Helper{
 			// if (user.socket_id) {
 			// 	return true;
 			// }
-			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
+			return true;
+			// return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
 		} catch (error) {
 			console.log(error);
 			return null;
