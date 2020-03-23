@@ -57,7 +57,7 @@ class Socket{
                 response.date = new moment().format("Y-MM-D");
                 response.time = new moment().format("hh:mm A");
                 this.insertMessage(response, socket);
-                console.log('socket data', socket);
+                console.log('sending message ', response);
                 console.log('sending message to user', response.toSocketId);
                 const toUser = await helper.getSocketId(response.toUserId);
                 console.log('toUser', toUser[0].socket_id);
