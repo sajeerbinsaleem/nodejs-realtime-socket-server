@@ -58,7 +58,7 @@ class Socket{
                 response.time = new moment().format("hh:mm A");
                 this.insertMessage(response, socket);
                 console.log('sending message to user', response.toSocketId);
-                socket.to(response.toSocketId).emit('addMessageResponse', response);
+                this.io.to(response.toSocketId).emit('addMessageResponse', response);
             });
 
             socket.on('typing', function (data) {
