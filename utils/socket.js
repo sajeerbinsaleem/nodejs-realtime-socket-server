@@ -41,6 +41,7 @@ class Socket{
             * get the get messages
             */
             socket.on('getMessages', async (data) => {
+                console.log('getMessages', data);
                 const result = await helper.getMessages(data.fromUserId, data.toUserId);
 				if (result === null) {
                     this.io.to(socket.id).emit('getMessagesResponse', {result:[],toUserId:data.toUserId});
