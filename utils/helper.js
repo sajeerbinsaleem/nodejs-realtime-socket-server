@@ -23,25 +23,25 @@ class Helper{
 		return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE socket_id = ?`, ['','N',userSocketId]);
 	}
 
-	getChatList(userId){
-		try {
-			return Promise.all([
-				this.db.query(`SELECT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id`, [userId])
-			]).then( (response) => {
-				return {
-					chatlist : response[0]
-				};
-			}).catch( (error) => {
-				console.warn(error);
-				return (null);
-			});
-		} catch (error) {
-			console.warn(error);
-			return null;
-		}
-	}
+	// getChatList(userId){
+	// 	try {
+	// 		return Promise.all([
+	// 			this.db.query(`SELECT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id`, [userId])
+	// 		]).then( (response) => {
+	// 			return {
+	// 				chatlist : response[0]
+	// 			};
+	// 		}).catch( (error) => {
+	// 			console.warn(error);
+	// 			return (null);
+	// 		});
+	// 	} catch (error) {
+	// 		console.warn(error);
+	// 		return null;
+	// 	}
+	// }
 
-	getCustomersChatList(userId, tenantId, slug){
+	getChatList(userId, tenantId, slug){
 		try {
 			return Promise.all([
 				this.db.query(`SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, driverup_${slug}.roles r WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ? AND r.id !=3`, [userId, tenantId])
