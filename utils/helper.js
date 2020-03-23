@@ -14,7 +14,7 @@ class Helper{
 		try {
 			const user = await this.db.query(`SELECT socket_id, id from users WHERE id = ?`, [userId]);
 			console.log('user', user);
-			if (user.length > 0 && user[0].socket_id !='') {
+			if (user[RowDataPacket].socket_id) {
 				return true;
 			}
 			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
