@@ -10,31 +10,8 @@ class Helper{
 		this.db = DB;
 	}
 
-
-	checkSocketIdExist(userId) {
-		try {
-			return Promise.all([
-				this.db.query(`SELECT socket_id, id from users WHERE id = ?`, [userId])
-			]).then( (response) => {
-				return response[0];
-			}).catch( (error) => {
-				console.warn(error);
-				return (null);
-			});
-		} catch (error) {
-			console.log(error);
-			return null;
-		}
-	}
-
 	async addSocketId(userId, userSocketId){
 		try {
-			// const user = this.checkSocketIdExist(userId);
-			// console.log('user', user);
-			// if (user.socket_id) {
-			// 	return true;
-			// }
-			// return true;
 			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
 		} catch (error) {
 			console.log(error);
