@@ -60,7 +60,7 @@ class Socket{
                 console.log('socket data', socket);
                 console.log('sending message to user', response.toSocketId);
                 const toUser = await helper.getSocketId(response.toUserId);
-                console.log('toUser', toUser);
+                console.log('toUser', toUser[0].socket_id);
                 socket.to(response.toSocketId).emit('addMessageResponse', response);
             });
 
