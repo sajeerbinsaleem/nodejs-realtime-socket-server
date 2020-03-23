@@ -1,7 +1,8 @@
 'use strict';
 
 const mysql = require('mysql');
-
+const dotenv = require('dotenv');
+dotenv.config();
 class Db {
 	constructor() {
 		this.connection = mysql.createPool({

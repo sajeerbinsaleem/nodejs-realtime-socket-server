@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const helper = require('./helper');
 const AWS = require('aws-sdk');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const BUCKET = process.env.S3_BUCKET
 const REGION = process.env.S3_REGION
