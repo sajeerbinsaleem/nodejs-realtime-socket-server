@@ -29,11 +29,11 @@ class Helper{
 
 	async addSocketId(userId, userSocketId){
 		try {
-			const user = this.checkSocketIdExist(userId);
-			console.log('user', user);
-			if (user.socket_id) {
-				return true;
-			}
+			// const user = this.checkSocketIdExist(userId);
+			// console.log('user', user);
+			// if (user.socket_id) {
+			// 	return true;
+			// }
 			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
 		} catch (error) {
 			console.log(error);
