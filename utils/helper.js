@@ -44,7 +44,7 @@ class Helper{
 	getChatList(userId, tenantId, slug){
 		try {
 			return Promise.all([
-				this.db.query(`SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, driverup_${slug}.roles r WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ? AND r.id !=3`, [userId, tenantId])
+				this.db.query(`SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ? AND r.id !=3`, [userId, tenantId])
 			]).then( (response) => {
 				return {
 					chatlist : response[0]
