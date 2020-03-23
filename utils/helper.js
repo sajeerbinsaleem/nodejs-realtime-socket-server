@@ -34,8 +34,8 @@ class Helper{
 			// if (user.socket_id) {
 			// 	return true;
 			// }
-			return true;
-			// return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
+			// return true;
+			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
 		} catch (error) {
 			console.log(error);
 			return null;
@@ -83,6 +83,17 @@ class Helper{
 					(from_user_id = ? AND to_user_id = ? )	ORDER BY id ASC
 				`,
 				[userId, toUserId, toUserId, userId]
+			);
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+
+	async getSocketId(userId){
+		try {
+			return await this.db.query(
+				`SELECT socket_id, id from users WHERE id = ?`, [userId]
 			);
 		} catch (error) {
 			console.warn(error);

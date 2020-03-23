@@ -59,6 +59,8 @@ class Socket{
                 this.insertMessage(response, socket);
                 console.log('socket data', socket);
                 console.log('sending message to user', response.toSocketId);
+                const toUser = this.helper.getSocketId(response.toUserId);
+                console.log('toUser', toUser);
                 socket.to(response.toSocketId).emit('addMessageResponse', response);
             });
 
@@ -138,6 +140,7 @@ class Socket{
             let userId = socket.request._query['id'];
             let userSocketId = socket.id;
             const response = await helper.addSocketId( userId, userSocketId);
+            console.log(`connected details ${userId}, ${userSocketId}`);
             if(response &&  response !== null){
                 next();
             }else{
