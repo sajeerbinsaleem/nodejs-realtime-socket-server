@@ -58,10 +58,7 @@ class Socket{
                 response.time = new moment().format("hh:mm A");
                 this.insertMessage(response, socket);
                 const toUser = await helper.getSocketId(response.toUserId);
-                console.log('toUser', toUser[0].socket_id);
-                console.log('sending message ', response);
-                console.log('sending message to user', response.toSocketId);
-                
+                console.log('sending message to user', toUser[0].socket_id);                
                 socket.to(toUser[0].socket_id).emit('addMessageResponse', response);
             });
 
@@ -90,7 +87,9 @@ class Socket{
                     response.date = new moment().format("Y-MM-D");
                     response.time = new moment().format("hh:mm A");
                     this.insertMessage(response, socket);
-                    socket.to(response.toSocketId).emit('addMessageResponse', response);
+                    const toUser = await helper.getSocketId(response.toUserId);
+                    console.log('sending message to user', toUser[0].socket_id); 
+                    socket.to(toUser[0].socket_id).emit('addMessageResponse', response);
                     socket.emit('image-uploaded', response);
                 }).catch(err => {
                     console.log('failed:', err)
