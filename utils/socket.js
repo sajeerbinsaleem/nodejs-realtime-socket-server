@@ -22,26 +22,9 @@ class Socket{
     socketEvents(){
         this.io.on('connection', (socket) => {
             /**
-            * get the user's Chat list
-            */
-            socket.on('chatList', async (userId) => {
-                const result = await helper.getChatList(userId);
-                this.io.to(socket.id).emit('chatListRes', {
-                    userConnected: false,
-                    chatList: result.chatlist
-                });
-
-                socket.broadcast.emit('chatListRes', {
-                    userConnected: true,
-                    userId: userId,
-                    socket_id: socket.id
-                });
-            });
-
-            /**
             * get the tenents user's Chat list
             */
-           socket.on('chatListCustomers', async (userId, tenantId, slug) => {
+           socket.on('getChatList', async (userId, tenantId, slug) => {
                 const result = await helper.getCustomersChatList(userId, tenantId, slug);
                 this.io.to(socket.id).emit('chatListRes', {
                     userConnected: false,
