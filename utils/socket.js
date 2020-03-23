@@ -25,7 +25,7 @@ class Socket{
             * get the tenents user's Chat list
             */
            socket.on('getChatList', async (userId, tenantId, slug) => {
-                const result = await helper.getCustomersChatList(userId, tenantId, slug);
+                const result = await helper.getChatList(userId, tenantId, slug);
                 this.io.to(socket.id).emit('chatListRes', {
                     userConnected: false,
                     chatList: result.chatlist
