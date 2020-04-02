@@ -1,0 +1,38 @@
+{
+    "logezy": {
+        "dbConfig": {
+            "DBHost": "68.183.40.156",
+            "DBUser": "logezy-core",
+            "DBPassword": "logezy@Core@db@107",
+            "Database": "logezycore"
+        },
+        "s3": {
+            "S3_BUCKET": "driver-up-chat-images",
+            "S3_REGION": "ap-south-1",
+            "S3_ACCESS_KEY": "AKIAJRXBDKP32XUBB6RA",
+            "S3_SECRET_KEY": "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"
+        },
+        "authorization": {
+            "token": "PL8JtlGm6qNiyxaCdSdgtKbq4YR5C2cACjRkwmCfhdsDFxB8K5Ku9cfAXBCI",
+            "clientID": "logezy"
+        }
+    },
+    "oncall": {
+        "dbConfig": {
+            "DBHost": "34.248.18.195",
+            "DBUser": "oncallhubdb",
+            "DBPassword": "OnCallDB@Pass",
+            "Database": "oncall_new"
+        },
+        "s3": {
+            "S3_BUCKET": "driver-up-chat-images",
+            "S3_REGION": "ap-south-1",
+            "S3_ACCESS_KEY": "AKIAJRXBDKP32XUBB6RA",
+            "S3_SECRET_KEY": "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"
+        },
+        "authorization": {
+            "token": "bxyaPJiH8atrbKH9EtD1QgxIaf9gLaTU62v4sxEnhTVRgqxzRhRNbI4kEd1n",
+            "clientID": "oncall"
+        }
+    }
+}

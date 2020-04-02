@@ -1,11 +1,15 @@
 'use strict';
 
 const mysql = require('mysql');
-const dotenv = require('dotenv');
-dotenv.config();
+// const dotenv = require('dotenv');
+// dotenv.config();
+
 class Db {
 	constructor() {
-		this.connection = mysql.createPool({
+		this.connection = this.connectDB();
+	}
+	connectDB() {
+		return mysql.createPool({
 			connectionLimit: 100,
 			host: process.env.DBHost,
 			user: process.env.DBUser,
@@ -15,6 +19,7 @@ class Db {
 		});
 	}
 	query(sql, args) {
+		this.connection = this.connectDB();
 		return new Promise((resolve, reject) => {
 			this.connection.query(sql, args, (err, rows) => {
 				if (err)

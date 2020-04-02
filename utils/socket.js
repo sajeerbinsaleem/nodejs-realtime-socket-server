@@ -3,28 +3,22 @@
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs');
-const helper = require('./helper');
+const config = fs.readFileSync('./config.json');
 const AWS = require('aws-sdk');
-const dotenv = require('dotenv');
-dotenv.config();
+let helper;
 
-const BUCKET = process.env.S3_BUCKET
-const REGION = process.env.S3_REGION
-const ACCESS_KEY = process.env.S3_ACCESS_KEY
-const SECRET_KEY = process.env.S3_SECRET_KEY
+class Socket {
 
-class Socket{
-
-    constructor(socket){
+    constructor(socket) {
         this.io = socket;
     }
 
-    socketEvents(){
+    socketEvents() {
         this.io.on('connection', (socket) => {
             /**
             * get the tenents user's Chat list
             */
-           socket.on('getChatList', async (userId, tenantId, slug) => {
+            socket.on('getChatList', async (userId, tenantId, slug) => {
                 const result = await helper.getChatList(userId, tenantId, slug);
                 this.io.to(socket.id).emit('chatListRes', {
                     userConnected: false,
@@ -43,11 +37,11 @@ class Socket{
             socket.on('getMessages', async (data) => {
                 console.log('getMessages', data);
                 const result = await helper.getMessages(data.fromUserId, data.toUserId);
-				if (result === null) {
-                    this.io.to(socket.id).emit('getMessagesResponse', {result:[],toUserId:data.toUserId});
-				}else{
-                    this.io.to(socket.id).emit('getMessagesResponse', {result:result,toUserId:data.toUserId});
-				}
+                if (result === null) {
+                    this.io.to(socket.id).emit('getMessagesResponse', { result: [], toUserId: data.toUserId });
+                } else {
+                    this.io.to(socket.id).emit('getMessagesResponse', { result: result, toUserId: data.toUserId });
+                }
             });
 
             /**
@@ -58,15 +52,20 @@ class Socket{
                 response.time = new moment().format("hh:mm A");
                 this.insertMessage(response, socket);
                 const toUser = await helper.getSocketId(response.toUserId);
-                console.log('sending message to user', toUser[0].socket_id);                
+                console.log('sending message to user', toUser[0].socket_id);
                 socket.to(toUser[0].socket_id).emit('addMessageResponse', response);
             });
 
             socket.on('typing', function (data) {
-                socket.to(data.socket_id).emit('typing', {typing:data.typing, to_socket_id:socket.id});
+                socket.to(data.socket_id).emit('typing', { typing: data.typing, to_socket_id: socket.id });
             });
 
             socket.on('upload-image', async (response) => {
+                const BUCKET = process.env.S3_BUCKET
+                const REGION = process.env.S3_REGION
+                const ACCESS_KEY = process.env.S3_ACCESS_KEY
+                const SECRET_KEY = process.env.S3_SECRET_KEY
+
                 AWS.config.update({
                     accessKeyId: ACCESS_KEY,
                     secretAccessKey: SECRET_KEY,
@@ -75,7 +74,7 @@ class Socket{
                 const s3 = new AWS.S3();
                 const imageRemoteName = response.fileName;
                 const toUser = await helper.getSocketId(response.toUserId);
-                console.log('sending message to user', toUser[0].socket_id); 
+                console.log('sending message to user', toUser[0].socket_id);
                 console.log('upload image emited', response);
                 s3.upload({
                     Bucket: BUCKET,
@@ -94,21 +93,6 @@ class Socket{
                 }).catch(err => {
                     console.log('failed:', err)
                 })
-                // let dir = moment().format("D-M-Y")+ "/" + moment().format('x') + "/" + response.fromUserId
-                // await helper.mkdirSyncRecursive(dir);
-                // let filepath = dir + "/" + response.fileName;
-                // var writer = fs.createWriteStream(path.basename('uploads') + "/" + filepath, { encoding: 'base64'});
-                // writer.write(response.message);
-                // writer.end();
-                // writer.on('finish', function () {
-                //     response.message = response.fileName;
-                //     response.filePath = filepath;
-                //     response.date = new moment().format("Y-MM-D");
-                //     response.time = new moment().format("hh:mm A");
-                //     this.insertMessage(response, socket);
-                //     socket.to(response.toSocketId).emit('addMessageResponse', response);
-                //     socket.emit('image-uploaded', response);
-                // }.bind(this));
             });
 
             socket.on('disconnect', async () => {
@@ -117,11 +101,11 @@ class Socket{
                     userDisconnected: true,
                     socket_id: socket.id
                 });
-        	});
+            });
         });
     }
 
-    async insertMessage(data, socket){
+    async insertMessage(data, socket) {
         const sqlResult = await helper.insertMessages({
             type: data.type,
             fileFormat: data.fileFormat,
@@ -134,18 +118,49 @@ class Socket{
             ip: socket.request.connection.remoteAddress
         });
     }
+    async addSocketId(userId, userSocketId, next) {
+        helper = require('./helper');
+        const response = await helper.addSocketId(userId, userSocketId);
+        console.log(`connected details ${userId}, ${userSocketId}`);
+        if (response && response !== null) {
+            next();
+        } else {
+            console.error(`Socket connection failed, for  user Id ${userId}.`);
+        }
+    }
 
-    socketConfig(){
-        this.io.use( async (socket, next) => {
-            let userId = socket.request._query['id'];
+    setEnvVariables(clientConfig, authParams, userSocketId, next) {
+        process.env.DBHost = clientConfig.dbConfig.DBHost;
+        process.env.DBUser = clientConfig.dbConfig.DBUser;
+        process.env.DBPassword = clientConfig.dbConfig.DBPassword;
+        process.env.Database = clientConfig.dbConfig.Database;
+
+
+        process.env.S3_BUCKET = clientConfig.s3.S3_BUCKET;
+        process.env.S3_REGION = clientConfig.s3.S3_REGION;
+        process.env.S3_ACCESS_KEY = clientConfig.s3.S3_ACCESS_KEY;
+        process.env.S3_SECRET_KEY = clientConfig.s3.S3_SECRET_KEY;
+
+        console.log('process.env', process.env.DBPassword);
+        
+        this.validateAccessToken(authParams, userSocketId, clientConfig, next);
+    }
+
+    validateAccessToken(authParams, userSocketId, clientConfig, next) {
+        if (authParams.token == clientConfig.authorization.token && authParams.clientId == clientConfig.authorization.clientID) {
+            this.addSocketId(authParams.id, userSocketId, next);
+        } else {
+            console.log('error');
+            next(new Error('Authentication error'));                  
+        }
+    }
+    socketConfig() {
+        this.io.use(async (socket, next) => {
+            let authParams = JSON.parse(socket.handshake.query.id);
+            let clientId = authParams.clientId;
             let userSocketId = socket.id;
-            const response = await helper.addSocketId( userId, userSocketId);
-            console.log(`connected details ${userId}, ${userSocketId}`);
-            if(response &&  response !== null){
-                next();
-            }else{
-                console.error(`Socket connection failed, for  user Id ${userId}.`);
-            }
+            let clientConfig = JSON.parse(config)[clientId];
+            this.setEnvVariables(clientConfig, authParams, userSocketId, next); // Set env variables
         });
         this.socketEvents();
     }
