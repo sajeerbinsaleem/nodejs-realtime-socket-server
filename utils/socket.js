@@ -157,6 +157,7 @@ class Socket {
     socketConfig() {
         this.io.use(async (socket, next) => {
             let authParams = JSON.parse(socket.handshake.query.id);
+            console.log('authParams', authParams);
             let clientId = authParams.clientId;
             let userSocketId = socket.id;
             let clientConfig = JSON.parse(config)[clientId];

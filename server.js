@@ -7,8 +7,8 @@ const socketEvents = require('./utils/socket');
 
 class Server {
     constructor() {
-        this.port = process.env.PORT || 80;
-        this.host = process.env.URL || 'io.logezy.com';
+        this.port = process.env.PORT || 3000;
+        this.host = process.env.URL || 'localhost';
 
         this.app = express();
         this.http = http.Server(this.app);
@@ -18,6 +18,10 @@ class Server {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "X-Requested-With");
             next();
+        });
+
+        this.app.get('/', function (req, res) { // Home route
+            res.sendFile(__dirname + '/view/home.html');
         });
 
         this.app.get('/status', function (req, res) { // test route
