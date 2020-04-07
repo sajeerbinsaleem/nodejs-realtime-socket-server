@@ -24,6 +24,7 @@ class Db {
 			this.connection.query(sql, args, (err, rows) => {
 				if (err)
 					return reject(err);
+				this.close();
 				resolve(rows);
 			});
 		});

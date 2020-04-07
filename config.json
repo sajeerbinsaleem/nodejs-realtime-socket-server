@@ -34,5 +34,23 @@
             "token": "bxyaPJiH8atrbKH9EtD1QgxIaf9gLaTU62v4sxEnhTVRgqxzRhRNbI4kEd1n",
             "clientID": "oncall"
         }
+    },
+    "local": {
+        "dbConfig": {
+            "DBHost": "localhost",
+            "DBUser": "root",
+            "DBPassword": "qwerty123",
+            "Database": "logezycore"
+        },
+        "s3": {
+            "S3_BUCKET": "driver-up-chat-images",
+            "S3_REGION": "ap-south-1",
+            "S3_ACCESS_KEY": "AKIAJRXBDKP32XUBB6RA",
+            "S3_SECRET_KEY": "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"
+        },
+        "authorization": {
+            "token": "7wLBYhs7hT5JthYHlK4ocI92kC09Sm1sNFtiTy5kLaZjyJEFFI7FvDRz7uyd",
+            "clientID": "local"
+        }
     }
 }
