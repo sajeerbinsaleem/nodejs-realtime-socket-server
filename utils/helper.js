@@ -23,10 +23,10 @@ class Helper{
 		return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE socket_id = ?`, ['','N',userSocketId]);
 	}
 
-	getChatList(userId, tenantId, slug){
+	getChatList(query){
 		try {
 			return Promise.all([
-				this.db.query(`SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ? AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ?`, [userId, tenantId])
+				this.db.query(query)
 			]).then( (response) => {
 				return {
 					chatlist : response[0]
