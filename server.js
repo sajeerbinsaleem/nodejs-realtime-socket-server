@@ -8,7 +8,7 @@ const socketEvents = require('./utils/socket');
 class Server {
     constructor() {
         this.port = process.env.PORT || 3000;
-        this.host = process.env.URL || 'io.logezy.com';
+        this.host = process.env.URL || 'localhost';
 
         this.app = express();
         this.http = http.Server(this.app);
