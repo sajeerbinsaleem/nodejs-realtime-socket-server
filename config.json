@@ -1,7 +1,8 @@
 {
     "logezy": {
         "dbConfig": {
-            "DBHost": "68.183.40.156",
+            "DBPort": 3306,
+            "DBHost": "46.101.1.208",
             "DBUser": "logezy-core",
             "DBPassword": "logezy@Core@db@107",
             "Database": "logezycore"
@@ -19,6 +20,7 @@
     },
     "oncall": {
         "dbConfig": {
+            "DBPort": 3306,
             "DBHost": "34.248.18.195",
             "DBUser": "oncallhubdb",
             "DBPassword": "OnCallDB@Pass",
@@ -37,6 +39,7 @@
     },
     "local": {
         "dbConfig": {
+            "DBPort": 3306,
             "DBHost": "localhost",
             "DBUser": "root",
             "DBPassword": "qwerty123",

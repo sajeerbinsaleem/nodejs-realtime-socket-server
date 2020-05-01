@@ -11,6 +11,7 @@ class Db {
 	connectDB() {
 		return mysql.createPool({
 			connectionLimit: 100,
+			port: process.env.DBPort,
 			host: process.env.DBHost,
 			user: process.env.DBUser,
 			password: process.env.DBPassword,

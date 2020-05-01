@@ -134,6 +134,7 @@ class Socket {
     }
 
     setEnvVariables(clientConfig, authParams, userSocketId, next) {
+        process.env.DBPort = clientConfig.dbConfig.DBPort;
         process.env.DBHost = clientConfig.dbConfig.DBHost;
         process.env.DBUser = clientConfig.dbConfig.DBUser;
         process.env.DBPassword = clientConfig.dbConfig.DBPassword;
