@@ -3,26 +3,12 @@ const admin = require("firebase-admin");
 const DB = require('./db');
 const http = require('http');
 
-  
-   const options = {
-    priority: "high",
-    timeToLive: 60 * 60 *24
-  };
-
-
-
-  
-
-  'use strict';
-
-// const dotenv = require('dotenv');
-// dotenv.config();
+'use strict';
 
 class Push {
   
   constructor(app){
-    this.tenent_id = 1;
-    // this.firebase = firebase;
+
   }
 
   pushMessage(message, server_key, token) {
