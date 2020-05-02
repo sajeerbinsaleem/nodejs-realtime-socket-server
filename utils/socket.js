@@ -19,9 +19,9 @@ class Socket {
             * get the tenents user's Chat list
             */
             socket.on('getChatList', async (userId, tenantId, slug) => {
-                let query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u WHERE u.id != ${userId}`;
+                let query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u WHERE u.id != ${userId} ORDER BY u.updated_at DESC`;
                 if (slug) {
-                    query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ${userId} AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ${tenantId}`;
+                    query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ${userId} AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ${tenantId} ORDER BY u.updated_at DESC`;
                 }
                 const result = await helper.getChatList(query);
                 this.io.to(socket.id).emit('chatListRes', {
@@ -110,6 +110,8 @@ class Socket {
     }
 
     async insertMessage(data, socket) {
+
+        
         const sqlResult = await helper.insertMessages({
             type: data.type,
             fileFormat: data.fileFormat,
@@ -119,6 +121,7 @@ class Socket {
             message: data.message,
             date: data.date,
             time: data.time,
+            tenant_slug: data.tenant_slug,
             ip: socket.request.connection.remoteAddress
         });
     }
@@ -162,7 +165,7 @@ class Socket {
     socketConfig() {
         this.io.use(async (socket, next) => {
             let authParams = JSON.parse(socket.handshake.query.id);
-            console.log('authParams', authParams);
+            // console.log('authParams', authParams);
             let clientId = authParams.clientId;
             let userSocketId = socket.id;
             let clientConfig = JSON.parse(config)[clientId];

@@ -3,16 +3,20 @@
 const DB = require('./db');
 const path = require('path');
 const fs = require('fs');
+const firebase = require('./push');
 
 class Helper{
 
 	constructor(app){
 		this.db = DB;
+		this.firebase = firebase;
 	}
 
 	async addSocketId(userId, userSocketId){
 		try {
-			return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
+			var current_date = new Date();
+
+			return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,'Y',current_date, userId]);
 		} catch (error) {
 			console.log(error);
 			return null;
@@ -20,7 +24,8 @@ class Helper{
 	}
 
 	async logoutUser(userSocketId){
-		return await this.db.query(`UPDATE users SET socket_id = ?, online= ? WHERE socket_id = ?`, ['','N',userSocketId]);
+		var current_date = new Date();
+		return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['','N', current_date, userSocketId]);
 	}
 
 	getChatList(query){
@@ -43,8 +48,21 @@ class Helper{
 
 	async insertMessages(params){
 		try {
-			return await this.db.query("INSERT INTO messages (`type`, `file_format`, `file_path`, `from_user_id`,`to_user_id`,`message`, `date`, `time`, `ip`) values (?,?,?,?,?,?,?,?,?)", [params.type, params.fileFormat, params.filePath, params.fromUserId, params.toUserId, params.message, params.date, params.time,params.ip]
+
+        	var firebase_server_key = await this.getFirebaseServerKey(params.tenant_slug,params.toUserId);
+
+        	var firebase_uuid = await this.getFirebaseUid(params.tenant_slug, params.toUserId);
+
+			if(firebase_server_key != null && firebase_uuid != null ){
+				this.firebase.pushMessage(params.message, firebase_server_key, firebase_uuid);
+			}
+
+			var current_date = new Date();
+			
+			return await this.db.query("INSERT INTO messages (`type`, `file_format`, `file_path`, `from_user_id`,`to_user_id`,`message`, `date`, `time`, `ip`, `created_at`) values (?,?,?,?,?,?,?,?,?,?)", [params.type, params.fileFormat, params.filePath, params.fromUserId, params.toUserId, params.message, params.date, params.time,params.ip,current_date]
 			);
+
+
 		} catch (error) {
 			console.warn(error);
 			return null;
@@ -61,6 +79,50 @@ class Helper{
 				`,
 				[userId, toUserId, toUserId, userId]
 			);
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+
+	async getFirebaseServerKey(slug){
+
+		var slug = slug;
+		try {
+
+
+			var firebase_server_key = await this.db.query(
+				
+				`SELECT settings_value FROM logezy_${slug}.agency_settings WHERE settings_key='firebase_server_key' LIMIT 1`,
+			);
+        	 return firebase_server_key[0].settings_value;
+
+			// var uui =  await this.db.query(
+			// 	`SELECT firebase_uin FROM logezy_${slug}.candidates WHERE user_id = ?`, [4]
+			// );
+			// var sv =  await this.db.query(
+			// 	`SELECT settings_value FROM logezy_${slug}.agency_settings WHERE settings_key='firebase_server_key' LIMIT 1`,
+			// );
+
+
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+	async getFirebaseUid(slug, userId){
+		var slug = slug;
+		var userId = userId;
+
+		console.log(`SELECT firebase_uin FROM logezy_${slug}.candidates WHERE user_id = ?`,
+				[userId]);
+
+		try {
+			var firebase_uuid =  await this.db.query(
+				`SELECT firebase_uin FROM logezy_${slug}.candidates WHERE user_id = ?`, [userId]
+			);
+			return firebase_uuid[0].firebase_uin;
+
 		} catch (error) {
 			console.warn(error);
 			return null;
