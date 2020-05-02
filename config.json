@@ -39,7 +39,7 @@
         "dbConfig": {
             "DBHost": "localhost",
             "DBUser": "root",
-            "DBPassword": "qwerty123",
+            "DBPassword": "root",
             "Database": "logezycore"
         },
         "s3": {
