@@ -85,6 +85,26 @@ class Helper{
 		}
 	}
 
+	async getUnreadMsgCount(userId){
+		try {
+			const count = await this.db.query(`SELECT count(*) as unreadCount from messages where is_read = 0 AND to_user_id = ?`, [userId]);
+			return count[0];
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+
+	async readMessages(fromUserId, toUserId){
+		try {
+			const read = await this.db.query(`UPDATE messages SET  is_read = 1 WHERE from_user_id = ? AND to_user_id = ?`, [fromUserId, toUserId]);
+			return read[0];
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+
 	async getFirebaseServerKey(slug){
 
 		var slug = slug;

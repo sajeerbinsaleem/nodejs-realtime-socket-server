@@ -24,9 +24,12 @@ class Socket {
                     query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ${userId} AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ${tenantId} ORDER BY u.updated_at DESC`;
                 }
                 const result = await helper.getChatList(query);
+                const count = await helper.getUnreadMsgCount(userId);
+                console.log('count', count);
                 this.io.to(socket.id).emit('chatListRes', {
                     userConnected: false,
-                    chatList: result.chatlist
+                    chatList: result.chatlist,
+                    unreadCount: count.unreadCount
                 });
 
                 socket.broadcast.emit('chatListRes', {
@@ -35,6 +38,7 @@ class Socket {
                     socket_id: socket.id
                 });
             });
+
             /**
             * get the get messages
             */
@@ -60,7 +64,8 @@ class Socket {
                 socket.to(toUser[0].socket_id).emit('addMessageResponse', response);
             });
 
-            socket.on('typing', function (data) {
+            socket.on('typing', async (data) => {
+                await helper.readMessages(data.toUserId, data.fromUserId);
                 socket.to(data.socket_id).emit('typing', { typing: data.typing, to_socket_id: socket.id });
             });
 
@@ -111,7 +116,7 @@ class Socket {
 
     async insertMessage(data, socket) {
 
-        
+
         const sqlResult = await helper.insertMessages({
             type: data.type,
             fileFormat: data.fileFormat,
@@ -149,8 +154,8 @@ class Socket {
         process.env.S3_ACCESS_KEY = clientConfig.s3.S3_ACCESS_KEY;
         process.env.S3_SECRET_KEY = clientConfig.s3.S3_SECRET_KEY;
 
-        console.log('process.env', process.env.DBPassword);
-        
+        console.log('process.env', process.env.DBHost);
+
         this.validateAccessToken(authParams, userSocketId, clientConfig, next);
     }
 
@@ -159,7 +164,7 @@ class Socket {
             this.addSocketId(authParams.id, userSocketId, next);
         } else {
             console.log('error');
-            next(new Error('Authentication error'));                  
+            next(new Error('Authentication error'));
         }
     }
     socketConfig() {

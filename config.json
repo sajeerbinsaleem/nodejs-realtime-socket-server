@@ -42,7 +42,7 @@
             "DBPort": 3306,
             "DBHost": "localhost",
             "DBUser": "root",
-            "DBPassword": "root",
+            "DBPassword": "qwerty123",
             "Database": "logezycore"
         },
         "s3": {
