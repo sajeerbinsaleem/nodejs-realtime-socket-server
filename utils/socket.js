@@ -153,6 +153,7 @@ class Socket {
         });
     }
     async addSocketId(userId, userSocketId, next) {
+        
         helper = require('./helper');
         const response = await helper.addSocketId(userId, userSocketId);
         if (response && response !== null) {
