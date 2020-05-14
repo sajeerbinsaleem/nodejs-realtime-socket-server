@@ -88,18 +88,18 @@ class Helper{
 	}
 
 	async getNotification(userId, tenatId, slug){
-		try {
-			var notificationCount = await this.db.query(
-				`SELECT COUNT(data) as count
-					FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
-				`,
-				[userId]
-			);
-		  return notificationCount[0];
-		} catch (error) {
-			console.warn(error);
-			return null;
-		}
+		// try {
+		// 	var notificationCount = await this.db.query(
+		// 		`SELECT COUNT(data) as count
+		// 			FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
+		// 		`,
+		// 		[userId]
+		// 	);
+		//   return notificationCount[0];
+		// } catch (error) {
+		// 	console.warn(error);
+		// 	return null;
+		// }
 	}
 
 	async getUnreadMsgCount(userId){
