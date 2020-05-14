@@ -100,6 +100,7 @@ class Helper{
 		// 	console.warn(error);
 		// 	return null;
 		// }
+		return true;
 	}
 
 	async getUnreadMsgCount(userId){
