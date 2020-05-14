@@ -20,21 +20,38 @@ class Socket {
             */
             socket.on('getChatList', async (userId, tenantId, slug) => {
                 // let query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u WHERE u.id != ${userId} ORDER BY u.updated_at DESC`;
-                let query = `Select DISTINCT u.id,u.name,u.socket_id,u.online,u.updated_at, t.slug from users u 
-                                left join user_tenants ut on ut.user_id = u.id
-                                left join tenants t on t.id = ut.tenant_id
-                                left join messages m on m.to_user_id = u.id
-                                where u.id != ${userId} 
-                                order by u.socket_id DESC`;
+                // let query = `Select DISTINCT u.id,u.name,u.socket_id,u.online,u.updated_at, t.slug from users u 
+                //                 left join user_tenants ut on ut.user_id = u.id
+                //                 left join tenants t on t.id = ut.tenant_id
+                //                 left join messages m on m.to_user_id = u.id
+                //                 where u.id != ${userId} 
+                //                 order by u.socket_id DESC`;
+
+                let query = `
+                    Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,(select created_at from messages where from_user_id = u.id 
+                    Order by created_at DESC LIMIT 1) as message_at
+                    from users u 
+                    left join user_tenants ut on ut.user_id = u.id
+                    left join tenants t on t.id = ut.tenant_id
+                    where u.id != ${userId} s
+                    order by u.socket_id DESC, message_at DESC`;
 
                 if (slug) {
                     // query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ${userId} AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ${tenantId} ORDER BY u.updated_at DESC`;
-                    query = `Select DISTINCT u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug from users u 
-                                left join user_tenants ut on ut.user_id = u.id
-                                left join tenants t on t.id = ut.tenant_id
-                                left join messages m on m.to_user_id = u.id
-                                where u.id != ${userId} AND ut.tenant_id = ${tenantId}
-                                order by u.socket_id DESC`;
+                    // query = `Select DISTINCT u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug from users u 
+                    //             left join user_tenants ut on ut.user_id = u.id
+                    //             left join tenants t on t.id = ut.tenant_id
+                    //             left join messages m on m.to_user_id = u.id
+                    //             where u.id != ${userId} AND ut.tenant_id = ${tenantId}
+                    //             order by u.socket_id DESC`;
+
+                    query = `Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,(select created_at from messages where from_user_id = u.id 
+                        Order by created_at DESC LIMIT 1) as message_at
+                        from users u 
+                        left join user_tenants ut on ut.user_id = u.id
+                        left join tenants t on t.id = ut.tenant_id
+                        where u.id != ${userId} AND ut.tenant_id = ${tenantId}
+                        order by u.socket_id DESC, message_at DESC`;
                 }
                 const result = await helper.getChatList(query);
                 const count = await helper.getUnreadMsgCount(userId);
@@ -153,7 +170,7 @@ class Socket {
         });
     }
     async addSocketId(userId, userSocketId, next) {
-        
+
         helper = require('./helper');
         const response = await helper.addSocketId(userId, userSocketId);
         if (response && response !== null) {
