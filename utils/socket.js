@@ -38,7 +38,6 @@ class Socket {
                 }
                 const result = await helper.getChatList(query);
                 const count = await helper.getUnreadMsgCount(userId);
-                console.log('count', count);
                 this.io.to(socket.id).emit('chatListRes', {
                     userConnected: false,
                     chatList: result.chatlist,
@@ -56,7 +55,6 @@ class Socket {
             * get the get messages
             */
             socket.on('getMessages', async (data) => {
-                console.log('getMessages', data);
                 const result = await helper.getMessages(data.fromUserId, data.toUserId);
                 if (result === null) {
                     this.io.to(socket.id).emit('getMessagesResponse', { result: [], toUserId: data.toUserId });
@@ -96,15 +94,12 @@ class Socket {
                 const s3 = new AWS.S3();
                 const imageRemoteName = response.fileName;
                 const toUser = await helper.getSocketId(response.toUserId);
-                console.log('sending message to user', toUser[0].socket_id);
-                console.log('upload image emited', response);
                 s3.upload({
                     Bucket: BUCKET,
                     Body: response.message,
                     Key: imageRemoteName,
                     ContentType: 'image/jpg'
                 }).promise().then(res => {
-                    console.log('s3 resp', res);
                     response.message = response.fileName;
                     response.filePath = res.Location;
                     response.date = new moment().format("Y-MM-D");
@@ -115,6 +110,18 @@ class Socket {
                 }).catch(err => {
                     console.log('failed:', err)
                 })
+            });
+
+            /**
+            * get the Notifications
+            */
+            socket.on('getNotification', async (data) => {
+                var notifications = await helper.getNotification(data.user_id, data.tenant_id,data.tenant_slug);
+                if (notifications === null) {
+                    this.io.to(socket.id).emit('notificationRes', { result: [], toUserId: data.user_id });
+                } else {
+                    this.io.to(socket.id).emit('notificationRes', { result: notifications, toUserId: data.user_id });
+                }
             });
 
             socket.on('disconnect', async () => {
@@ -146,7 +153,6 @@ class Socket {
     async addSocketId(userId, userSocketId, next) {
         helper = require('./helper');
         const response = await helper.addSocketId(userId, userSocketId);
-        console.log(`connected details ${userId}, ${userSocketId}`);
         if (response && response !== null) {
             next();
         } else {
@@ -167,7 +173,6 @@ class Socket {
         process.env.S3_ACCESS_KEY = clientConfig.s3.S3_ACCESS_KEY;
         process.env.S3_SECRET_KEY = clientConfig.s3.S3_SECRET_KEY;
 
-        console.log('process.env', process.env.DBHost);
 
         this.validateAccessToken(authParams, userSocketId, clientConfig, next);
     }
