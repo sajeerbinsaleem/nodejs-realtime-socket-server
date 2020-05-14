@@ -20,7 +20,7 @@ class Socket {
             */
             socket.on('getChatList', async (userId, tenantId, slug) => {
                 // let query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u WHERE u.id != ${userId} ORDER BY u.updated_at DESC`;
-                let query = `Select DISTINCT u.id,u.name,u.socket_id,u.online,u.updated_at, t.slug from users u 
+                let query = `Select DISTINCT u.id,u.name,u.socket_id,u.online,u.updated_at, t.slug, m.created_at from users u 
                                 left join user_tenants ut on ut.user_id = u.id
                                 left join tenants t on t.id = ut.tenant_id
                                 left join messages m on m.to_user_id = u.id
@@ -29,7 +29,7 @@ class Socket {
 
                 if (slug) {
                     // query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u, user_tenants ut, tenants t, logezy_${slug}.roles r WHERE u.id != ${userId} AND ut.user_id = u.id AND ut.tenant_id = t.id AND ut.tenant_id = ${tenantId} ORDER BY u.updated_at DESC`;
-                    query = `Select DISTINCT u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug from users u 
+                    query = `Select DISTINCT u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug, m.created_at from users u 
                                 left join user_tenants ut on ut.user_id = u.id
                                 left join tenants t on t.id = ut.tenant_id
                                 left join messages m on m.to_user_id = u.id
