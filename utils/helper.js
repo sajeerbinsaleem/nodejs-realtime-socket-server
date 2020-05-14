@@ -48,14 +48,16 @@ class Helper{
 
 	async insertMessages(params){
 		try {
+			if(params.tenant_slug){
+				var firebase_server_key = await this.getFirebaseServerKey(params.tenant_slug,params.toUserId);
 
-        	var firebase_server_key = await this.getFirebaseServerKey(params.tenant_slug,params.toUserId);
-
-        	var firebase_uuid = await this.getFirebaseUid(params.tenant_slug, params.toUserId);
-
-			if(firebase_server_key != null && firebase_uuid != null ){
-				this.firebase.pushMessage(params.message, firebase_server_key, firebase_uuid);
+				var firebase_uuid = await this.getFirebaseUid(params.tenant_slug, params.toUserId);
+	
+				if(firebase_server_key != null && firebase_uuid != null ){
+					this.firebase.pushMessage(params.message, firebase_server_key, firebase_uuid);
+				}
 			}
+        	
 
 			var current_date = new Date();
 			
@@ -86,18 +88,19 @@ class Helper{
 	}
 
 	async getNotification(userId, tenatId, slug){
-		try {
-			var notificationCount = await this.db.query(
-				`SELECT COUNT(data) as count
-					FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
-				`,
-				[userId]
-			);
-		  return notificationCount[0];
-		} catch (error) {
-			console.warn(error);
-			return null;
-		}
+		// try {
+		// 	var notificationCount = await this.db.query(
+		// 		`SELECT COUNT(data) as count
+		// 			FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
+		// 		`,
+		// 		[userId]
+		// 	);
+		//   return notificationCount[0];
+		// } catch (error) {
+		// 	console.warn(error);
+		// 	return null;
+		// }
+		return true;
 	}
 
 	async getUnreadMsgCount(userId){
