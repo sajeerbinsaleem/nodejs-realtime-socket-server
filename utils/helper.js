@@ -15,8 +15,10 @@ class Helper{
 	async addSocketId(userId, userSocketId){
 		try {
 			var current_date = new Date();
+			var onlineFlag  = await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,'Y',current_date, userId]);
+
 			return await this.db.query('INSERT INTO socket_users (`user_id`, `socket_id`) VALUES (?, ?)', [userId, userSocketId])
-			// return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,'Y',current_date, userId]);
+			
 		} catch (error) {
 			console.log(error);
 			return null;
@@ -25,7 +27,7 @@ class Helper{
 
 	async logoutUser(userSocketId){
 		var current_date = new Date();
-		// return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['','N', current_date, userSocketId]);
+		var onlineFlag = await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['','N', current_date, userSocketId]);
 		return await this.db.query(`DELETE from socket_users WHERE socket_id = ?`, [userSocketId]);
 	}
 
@@ -89,19 +91,23 @@ class Helper{
 	}
 
 	async getNotification(userId, tenatId, slug){
-		// try {
-		// 	var notificationCount = await this.db.query(
-		// 		`SELECT COUNT(data) as count
-		// 			FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
-		// 		`,
-		// 		[userId]
-		// 	);
-		//   return notificationCount[0];
-		// } catch (error) {
-		// 	console.warn(error);
-		// 	return null;
-		// }
-		return true;
+
+		if(slug){
+			try {
+				var notificationCount = await this.db.query(
+					`SELECT COUNT(data) as count
+						FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
+					`,
+					[userId]
+				);
+			  return notificationCount[0];
+			} catch (error) {
+				console.warn(error);
+				return null;
+			}
+		}
+
+		return null;
 	}
 
 	async getUnreadMsgCount(userId){
@@ -135,14 +141,6 @@ class Helper{
 				`SELECT settings_value FROM logezy_${slug}.agency_settings WHERE settings_key='firebase_server_key' LIMIT 1`,
 			);
         	 return firebase_server_key[0].settings_value;
-
-			// var uui =  await this.db.query(
-			// 	`SELECT firebase_uin FROM logezy_${slug}.candidates WHERE user_id = ?`, [4]
-			// );
-			// var sv =  await this.db.query(
-			// 	`SELECT settings_value FROM logezy_${slug}.agency_settings WHERE settings_key='firebase_server_key' LIMIT 1`,
-			// );
-
 
 		} catch (error) {
 			console.warn(error);
