@@ -70,9 +70,11 @@ class Socket {
                 response.date = new moment().format("Y-MM-D");
                 response.time = new moment().format("hh:mm A");
                 this.insertMessage(response, socket);
-                const toUser = await helper.getSocketId(response.toUserId);
-                console.log('sending message to user', toUser[0].socket_id);
-                socket.to(toUser[0].socket_id).emit('addMessageResponse', response);
+                const toUsers = await helper.getSocketId(response.toUserId);
+                for (const toUser of toUsers) {
+                    console.log('sending message to user', toUser.socket_id);
+                    socket.to(toUser.socket_id).emit('addMessageResponse', response);
+                }
             });
 
             socket.on('typing', async (data) => {

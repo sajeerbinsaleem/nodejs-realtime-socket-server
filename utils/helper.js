@@ -167,7 +167,7 @@ class Helper{
 	async getSocketId(userId){
 		try {
 			return await this.db.query(
-				`SELECT socket_id, id from users WHERE id = ?`, [userId]
+				`SELECT * from socket_users WHERE user_id = ?`, [userId]
 			);
 		} catch (error) {
 			console.warn(error);
