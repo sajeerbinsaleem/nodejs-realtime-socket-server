@@ -85,6 +85,21 @@ class Helper{
 		}
 	}
 
+	async getNotification(userId, tenatId, slug){
+		try {
+			var notificationCount = await this.db.query(
+				`SELECT COUNT(data) as count
+					FROM logezy_${slug}.notifications WHERE notifiable_id = ?;
+				`,
+				[userId]
+			);
+		  return notificationCount[0];
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+
 	async getUnreadMsgCount(userId){
 		try {
 			const count = await this.db.query(`SELECT count(*) as unreadCount from messages where is_read = 0 AND to_user_id = ?`, [userId]);
@@ -133,9 +148,6 @@ class Helper{
 	async getFirebaseUid(slug, userId){
 		var slug = slug;
 		var userId = userId;
-
-		console.log(`SELECT firebase_uin FROM logezy_${slug}.candidates WHERE user_id = ?`,
-				[userId]);
 
 		try {
 			var firebase_uuid =  await this.db.query(
