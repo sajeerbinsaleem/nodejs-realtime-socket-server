@@ -15,8 +15,8 @@ class Helper{
 	async addSocketId(userId, userSocketId){
 		try {
 			var current_date = new Date();
-
-			return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,'Y',current_date, userId]);
+			return await this.db.query('INSERT INTO socket_users (`user_id`, `socket_id`) VALUES (?, ?)', [userId, userSocketId])
+			// return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,'Y',current_date, userId]);
 		} catch (error) {
 			console.log(error);
 			return null;
