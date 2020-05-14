@@ -25,7 +25,8 @@ class Helper{
 
 	async logoutUser(userSocketId){
 		var current_date = new Date();
-		return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['','N', current_date, userSocketId]);
+		// return await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['','N', current_date, userSocketId]);
+		return await this.db.query(`DELETE from socket_users WHERE socket_id = ?`, [userSocketId]);
 	}
 
 	getChatList(query){
