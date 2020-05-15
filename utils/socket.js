@@ -18,7 +18,7 @@ class Socket {
             /**
             * get the tenents user's Chat list
             */
-            socket.on('getChatList', async (userId, tenantId, slug) => {
+            socket.on('getChatList', async (userId, tenantId, slug, role = null) => {
                 // let query = `SELECT DISTINCT u.id, u.name, u.socket_id, u.online, u.updated_at FROM users u WHERE u.id != ${userId} ORDER BY u.updated_at DESC`;
                 // let query = `Select DISTINCT u.id,u.name,u.socket_id,u.online,u.updated_at, t.slug from users u 
                 //                 left join user_tenants ut on ut.user_id = u.id
@@ -45,13 +45,47 @@ class Socket {
                     //             where u.id != ${userId} AND ut.tenant_id = ${tenantId}
                     //             order by u.socket_id DESC`;
 
-                    query = `Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,(select created_at from messages where from_user_id = u.id 
-                        Order by created_at DESC LIMIT 1) as message_at
-                        from users u 
-                        left join user_tenants ut on ut.user_id = u.id
-                        left join tenants t on t.id = ut.tenant_id
-                        where u.id != ${userId} AND ut.tenant_id = ${tenantId}
-                        order by u.socket_id DESC, message_at DESC`;
+                    
+                    switch(role){
+                        case 'admin':
+                            query = `Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,(select created_at from messages where from_user_id = u.id 
+                                Order by created_at DESC LIMIT 1) as message_at
+                                from users u 
+                                left join user_tenants ut on ut.user_id = u.id
+                                left join tenants t on t.id = ut.tenant_id
+                                where u.id != ${userId} AND ut.tenant_id = ${tenantId}
+                                order by u.socket_id DESC, message_at DESC`;
+                            break;
+                        case 'manager':
+                            query = `Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,(select created_at from messages where from_user_id = u.id 
+                                Order by created_at DESC LIMIT 1) as message_at
+                                from users u 
+                                left join user_tenants ut on ut.user_id = u.id
+                                left join tenants t on t.id = ut.tenant_id
+                                where u.id != ${userId} AND ut.tenant_id = ${tenantId}
+                                order by u.socket_id DESC, message_at DESC`;
+                            break;
+                        case 'candidate':
+                            query = `Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug, ru.role_id,r.name,
+                            (select created_at from messages where from_user_id = u.id 
+                             Order by created_at DESC LIMIT 1) as message_at
+                              from users u 
+                              left join user_tenants ut on ut.user_id = u.id
+                              left join tenants t on t.id = ut.tenant_id
+                            left join logezy_${slug}.role_users ru on u.id = ru.user_id
+                            left join logezy_${slug}.roles r on ru.role_id = r.id
+                              where u.id != ${userId} AND ut.tenant_id = ${tenantId} AND r.name != 'candidate'
+                              order by u.socket_id DESC, message_at DESC`;
+                            break;
+                        default:
+                            query = `Select  u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,(select created_at from messages where from_user_id = u.id 
+                                Order by created_at DESC LIMIT 1) as message_at
+                                from users u 
+                                left join user_tenants ut on ut.user_id = u.id
+                                left join tenants t on t.id = ut.tenant_id
+                                where u.id != ${userId} AND ut.tenant_id = ${tenantId}
+                                order by u.socket_id DESC, message_at DESC`;
+                    }
                 }
                 const result = await helper.getChatList(query);
                 const count = await helper.getUnreadMsgCount(userId);
@@ -73,6 +107,8 @@ class Socket {
             */
             socket.on('getMessages', async (data) => {
                 const result = await helper.getMessages(data.fromUserId, data.toUserId);
+                await helper.readMessages(data.toUserId, data.fromUserId);
+                
                 if (result === null) {
                     this.io.to(socket.id).emit('getMessagesResponse', { result: [], toUserId: data.toUserId });
                 } else {
