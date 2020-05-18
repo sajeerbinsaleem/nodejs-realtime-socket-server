@@ -22,7 +22,8 @@ class Push {
                 title: "You have a new message",
                 body: message,
                 collapse_key: "Updates Available",
-                sound: "default"
+                sound: "default",
+                notification_type: 3
           },
           to : token
         },

@@ -187,6 +187,10 @@ class Socket {
                 }
             });
 
+            socket.on('notify', async(data) => {
+                
+            });
+
             socket.on('disconnect', async () => {
                 const isLoggedOut = await helper.logoutUser(socket.id);
                 socket.broadcast.emit('chatListRes', {
