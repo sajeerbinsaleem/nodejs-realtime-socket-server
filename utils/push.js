@@ -23,7 +23,7 @@ class Push {
                 body: message,
                 collapse_key: "Updates Available",
                 sound: "default",
-                notification_type: 3
+                notification_type: 'new_chat'
           },
           to : token
         },
