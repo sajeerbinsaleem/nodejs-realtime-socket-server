@@ -188,7 +188,16 @@ class Socket {
             });
 
             socket.on('notify', async(data) => {
-                
+                console.log('notify','data');
+                console.log('notify',data);
+                if (data.slug && data.tenant_id){
+                    const toUsers = await helper.getAdminByTenant(data.slug, data.tenant_id);
+                    for (const toUser of toUsers) {
+                        console.log('sending message to user', toUser.socket_id);
+                        socket.to(toUser.socket_id).emit('notificationRes', { result: {count:10}, toUserId: toUser.id });
+                    }
+                }
+
             });
 
             socket.on('disconnect', async () => {

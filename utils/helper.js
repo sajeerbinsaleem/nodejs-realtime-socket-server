@@ -163,6 +163,28 @@ class Helper{
 		}
 	}
 
+	/**
+	 * 
+	 * @param { tenant id} tenantId 
+	 */
+	async getAdminByTenant(slug,tenantId){
+		try {
+			var users =  await this.db.query(
+				`SELECT distinct u.id,u.name, su.socket_id FROM users u left join user_tenants ut on u.id = ut.user_id
+				left join logezy_${slug}.role_users ru on u.id = ru.user_id
+				left join logezy_${slug}.roles r on ru.role_id = r.id
+				left join socket_users su on u.id = su.user_id
+				where ut.tenant_id = ${tenantId} and r.name = 'manager' and su.socket_id != null`
+			);
+		console.log('users',users)
+		return users;
+		
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+
 	async getSocketId(userId){
 		try {
 			return await this.db.query(
