@@ -2,7 +2,7 @@
     "tutelle": {
         "dbConfig": {
             "DBPort": 3306,
-            "DBHost": "3.22.122.168",
+            "DBHost": "127.0.0.1",
             "DBUser": "auxano",
             "DBPassword": "auxano@mysql",
             "Database": "schoolmanagement"
