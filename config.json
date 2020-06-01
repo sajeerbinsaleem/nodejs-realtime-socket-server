@@ -1,55 +1,37 @@
 {
-    "logezy": {
+    "tutelle": {
         "dbConfig": {
             "DBPort": 3306,
-            "DBHost": "46.101.1.208",
-            "DBUser": "logezy-core",
-            "DBPassword": "logezy@Core@db@107",
-            "Database": "logezycore"
+            "DBHost": "3.22.122.168",
+            "DBUser": "auxano",
+            "DBPassword": "auxano@mysql",
+            "Database": "schoolmanagement"
         },
         "s3": {
-            "S3_BUCKET": "driver-up-chat-images",
-            "S3_REGION": "ap-south-1",
-            "S3_ACCESS_KEY": "AKIAJRXBDKP32XUBB6RA",
-            "S3_SECRET_KEY": "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"
+            "S3_BUCKET": "tutelle",
+            "S3_REGION": "us-east-2",
+            "S3_ACCESS_KEY": "AKIA3YTCCULHUIA5X6LO",
+            "S3_SECRET_KEY": "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"
         },
         "authorization": {
             "token": "PL8JtlGm6qNiyxaCdSdgtKbq4YR5C2cACjRkwmCfhdsDFxB8K5Ku9cfAXBCI",
-            "clientID": "logezy"
+            "clientID": "tutelle"
         }
     },
-    "oncall": {
-        "dbConfig": {
-            "DBPort": 3306,
-            "DBHost": "34.248.18.195",
-            "DBUser": "oncallhubdb",
-            "DBPassword": "OnCallDB@Pass",
-            "Database": "oncall_new"
-        },
-        "s3": {
-            "S3_BUCKET": "driver-up-chat-images",
-            "S3_REGION": "ap-south-1",
-            "S3_ACCESS_KEY": "AKIAJRXBDKP32XUBB6RA",
-            "S3_SECRET_KEY": "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"
-        },
-        "authorization": {
-            "token": "bxyaPJiH8atrbKH9EtD1QgxIaf9gLaTU62v4sxEnhTVRgqxzRhRNbI4kEd1n",
-            "clientID": "oncall"
-        }
-    },
+    
     "local": {
         "dbConfig": {
             "DBPort": 3306,
             "DBHost": "localhost",
             "DBUser": "root",
             "DBPassword": "root",
-            "Database": "logezycore"
+            "Database": "school"
         },
         "s3": {
-            "S3_BUCKET": "driver-up-chat-images",
-            "S3_REGION": "ap-south-1",
-            "S3_ACCESS_KEY": "AKIAJRXBDKP32XUBB6RA",
-            "S3_SECRET_KEY": "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"
+            "S3_BUCKET": "tutelle",
+            "S3_REGION": "us-east-2",
+            "S3_ACCESS_KEY": "AKIA3YTCCULHUIA5X6LO",
+            "S3_SECRET_KEY": "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"
         },
         "authorization": {
             "token": "7wLBYhs7hT5JthYHlK4ocI92kC09Sm1sNFtiTy5kLaZjyJEFFI7FvDRz7uyd",

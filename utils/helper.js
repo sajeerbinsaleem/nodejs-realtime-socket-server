@@ -13,10 +13,11 @@ class Helper{
 	}
 
 	async addSocketId(userId, userSocketId){
+		console.log('userSocketId',userSocketId)
 		try {
 			var current_date = new Date();
-			var onlineFlag  = await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,'Y',current_date, userId]);
-
+			await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE id = ?`, [userSocketId,1,current_date, userId]);
+			// return onlineFlag;
 			return await this.db.query('INSERT INTO socket_users (`user_id`, `socket_id`) VALUES (?, ?)', [userId, userSocketId])
 			
 		} catch (error) {
@@ -27,7 +28,9 @@ class Helper{
 
 	async logoutUser(userSocketId){
 		var current_date = new Date();
-		var onlineFlag = await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['','N', current_date, userSocketId]);
+		var onlineFlag = await this.db.query(`UPDATE users SET socket_id = ?, online= ?, updated_at = ? WHERE socket_id = ?`, ['',0, current_date, userSocketId]);
+		// return onlineFlag;
+
 		return await this.db.query(`DELETE from socket_users WHERE socket_id = ?`, [userSocketId]);
 	}
 

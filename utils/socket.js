@@ -27,13 +27,11 @@ class Socket {
                 //                 where u.id != ${userId} 
                 //                 order by u.socket_id DESC`;
 
-                let query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,
+                let query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at,
                 (select created_at from messages where from_user_id = u.id 
                  Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
                  where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
                  from users u 
-                 left join user_tenants ut on ut.user_id = u.id
-                 left join tenants t on t.id = ut.tenant_id
                  where u.id != ${userId} 
                  order by u.socket_id DESC, message_at DESC`;
 
@@ -49,50 +47,40 @@ class Socket {
                     
                     switch(role){
                         case 'admin':
-                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,
-                            (select created_at from messages where from_user_id = u.id 
-                             Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
-                             where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
-                             from users u 
-                             left join user_tenants ut on ut.user_id = u.id
-                             left join tenants t on t.id = ut.tenant_id
-                             where u.id != ${userId} AND ut.tenant_id = ${tenantId}
-                             order by u.socket_id DESC, message_at DESC`;
+                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at,
+                                (select created_at from messages where from_user_id = u.id 
+                                 Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
+                                 where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
+                                 from users u 
+                                 where u.id != ${userId} 
+                                 order by u.socket_id DESC, message_at DESC`;
                             break;
-                        case 'manager':
-                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,
-                            (select created_at from messages where from_user_id = u.id 
-                             Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
-                             where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
-                             from users u 
-                             left join user_tenants ut on ut.user_id = u.id
-                             left join tenants t on t.id = ut.tenant_id
-                             where u.id != ${userId} AND ut.tenant_id = ${tenantId}
-                             order by u.socket_id DESC, message_at DESC`;
+                        case 'teacher':
+                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at,
+                                (select created_at from messages where from_user_id = u.id 
+                                 Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
+                                 where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
+                                 from users u 
+                                 where u.id != ${userId} 
+                                 order by u.socket_id DESC, message_at DESC`;
                             break;
-                        case 'candidate':
-                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,  
-                            (select created_at from messages where from_user_id = u.id 
-                             Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
-                             where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
-                            from users u 
-                            left join user_tenants ut on ut.user_id = u.id
-                            left join tenants t on t.id = ut.tenant_id
-                             join logezy_${slug}.role_users ru on u.id = ru.user_id
-                             join logezy_${slug}.roles r on ru.role_id = r.id
-                            where u.id != ${userId} AND ut.tenant_id = ${tenantId} AND r.name != 'candidate'
-                            order by u.socket_id DESC, message_at DESC`;
+                        case 'student':
+                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at,
+                                (select created_at from messages where from_user_id = u.id 
+                                 Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
+                                 where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
+                                 from users u 
+                                 where u.id != ${userId} 
+                                 order by u.socket_id DESC, message_at DESC`;
                             break;
                         default:
-                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at, t.slug,
-                            (select created_at from messages where from_user_id = u.id 
-                             Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
-                             where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
-                             from users u 
-                             left join user_tenants ut on ut.user_id = u.id
-                             left join tenants t on t.id = ut.tenant_id
-                             where u.id != ${userId} AND ut.tenant_id = ${tenantId}
-                             order by u.socket_id DESC, message_at DESC`;
+                            query = `Select distinct u.id,u.name,u.socket_id,u.online, u.updated_at,
+                                (select created_at from messages where from_user_id = u.id 
+                                 Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
+                                 where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
+                                 from users u 
+                                 where u.id != ${userId} 
+                                 order by u.socket_id DESC, message_at DESC`;
                     }
                 }
                 const result = await helper.getChatList(query);
