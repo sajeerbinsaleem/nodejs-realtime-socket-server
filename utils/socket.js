@@ -70,7 +70,7 @@ class Socket {
                                  Order by created_at DESC LIMIT 1) as message_at, (select count(is_read) from messages
                                  where from_user_id =  u.id AND to_user_id = ${userId} AND is_read = 0) as count
                                  from users u 
-                                 where u.id != ${userId} 
+                                 where u.id != ${userId} AND u.role in ('admin','teacher')
                                  order by u.socket_id DESC, message_at DESC`;
                             break;
                         default:
@@ -252,8 +252,10 @@ class Socket {
     }
     socketConfig() {
         this.io.use(async (socket, next) => {
+            // console.log('socket', socket);
+            
             let authParams = JSON.parse(socket.handshake.query.id);
-            // console.log('authParams', authParams);
+            console.log('authParams', authParams);
             let clientId = authParams.clientId;
             let userSocketId = socket.id;
             let clientConfig = JSON.parse(config)[clientId];
